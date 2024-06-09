@@ -3,6 +3,9 @@
     "name": "ignitefleet",
     "slug": "ignitefleet",
     "version": "1.0.0",
+    "experiments": {
+      "tsconfigPaths": true
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",

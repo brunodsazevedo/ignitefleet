@@ -1,7 +1,8 @@
 import { Container, Slogan, Title } from './styles'
 
-import BackgroundImg from '../../assets/background.png'
-import { Button } from '../../components/Button'
+import { Button } from '@/components/Button'
+
+import BackgroundImg from '@/assets/background.png'
 
 export function SignIn() {
   return (
