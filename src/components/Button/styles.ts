@@ -18,5 +18,5 @@ export const Title = styled.Text`
 `
 
 export const Loading = styled.ActivityIndicator.attrs(({ theme }) => ({
-  color: theme.COLORS.BRAND_LIGHT,
+  color: theme.COLORS.WHITE,
 }))``

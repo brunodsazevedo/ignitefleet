@@ -1,9 +1,7 @@
 import React from 'react'
 import { TouchableOpacityProps } from 'react-native'
 
-import { Loading } from '@/components/Loading'
-
-import { Container, Title } from './styles'
+import { Container, Title, Loading } from './styles'
 
 type Props = TouchableOpacityProps & {
   title: string
