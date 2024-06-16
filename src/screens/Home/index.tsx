@@ -1,6 +1,13 @@
 import React from 'react'
+
+import { HomeHeader } from '@/components/HomeHeader'
+
 import { Container } from './styles'
 
 export function Home() {
-  return <Container></Container>
+  return (
+    <Container>
+      <HomeHeader />
+    </Container>
+  )
 }
