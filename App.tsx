@@ -12,7 +12,8 @@ import { Loading } from '@/components/Loading'
 import theme from '@/theme'
 
 import { SignIn } from '@/screens/SignIn'
-import { Home } from '@/screens/Home'
+
+import { Routes } from '@/routes'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -34,7 +35,7 @@ export default function App() {
         />
 
         <UserProvider fallback={SignIn}>
-          <Home />
+          <Routes />
         </UserProvider>
       </ThemeProvider>
     </AppProvider>
