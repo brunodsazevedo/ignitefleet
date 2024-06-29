@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import { Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -39,10 +40,13 @@ export function Home() {
   }
 
   useEffect(() => {
+    fetchVehicleInUse()
+  }, [])
+
+  useEffect(() => {
     realm.addListener('change', () => fetchVehicleInUse())
 
     return () => realm.removeListener('change', fetchVehicleInUse)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
