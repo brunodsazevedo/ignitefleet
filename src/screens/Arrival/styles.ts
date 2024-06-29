@@ -7,13 +7,13 @@ export const Container = styled.View`
 
 export const Content = styled.View`
   flex-grow: 1;
-  padding-top: 32px;
+  padding: 32px;
 `
 
 export const Label = styled.Text`
   color: ${({ theme }) => theme.COLORS.GRAY_300};
   font-size: ${({ theme }) => theme.FONT_SIZE.SM}px;
-  font-size: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
+  font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
 
   margin-top: 32px;
   margin-bottom: 5px;
@@ -22,13 +22,13 @@ export const Label = styled.Text`
 export const LicensePlate = styled.Text`
   color: ${({ theme }) => theme.COLORS.GRAY_100};
   font-size: ${({ theme }) => theme.FONT_SIZE.XXXL}px;
-  font-size: ${({ theme }) => theme.FONT_FAMILY.BOLD};
+  font-family: ${({ theme }) => theme.FONT_FAMILY.BOLD};
 `
 
 export const Description = styled.Text`
   color: ${({ theme }) => theme.COLORS.GRAY_100};
   font-size: ${({ theme }) => theme.FONT_SIZE.MD}px;
-  font-size: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
+  font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
 
   text-align: justify;
 `
@@ -37,5 +37,6 @@ export const Footer = styled.View`
   width: 100%;
   flex-direction: row;
   gap: 16px;
+
   margin-top: 32px;
 `

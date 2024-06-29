@@ -23,6 +23,8 @@ export function SignIn() {
     try {
       setIsAuthenticating(true)
 
+      await GoogleSignin.signOut()
+
       const { idToken } = await GoogleSignin.signIn()
       if (idToken) {
         const credentials = Realm.Credentials.jwt(idToken)
