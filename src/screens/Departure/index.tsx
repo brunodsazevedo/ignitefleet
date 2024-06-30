@@ -1,8 +1,14 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert, ScrollView, TextInput } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useUser } from '@realm/react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import {
+  useForegroundPermissions,
+  watchPositionAsync,
+  LocationAccuracy,
+  LocationSubscription,
+} from 'expo-location'
 
 import { Header } from '@/components/Header'
 import { LicensePlateInput } from '@/components/LicensePlateInput'
@@ -10,11 +16,11 @@ import { TextAreaInput } from '@/components/TextAreaInput'
 import { Button } from '@/components/Button/index'
 
 import { useRealm } from '@/libs/realm'
+import { Historic } from '@/libs/realm/schemas/Historic'
 
 import { licensePlateValidate } from '@/utils/licensePlateValidate'
 
-import { Container, Content } from './styles'
-import { Historic } from '@/libs/realm/schemas/Historic'
+import { Container, Content, Message } from './styles'
 
 export function Departure() {
   const [description, setDescription] = useState('')
@@ -23,6 +29,9 @@ export function Departure() {
 
   const descriptionRef = useRef<TextInput>(null)
   const licensePlateRef = useRef<TextInput>(null)
+
+  const [locationForegroundPermission, requestLocationForegroundPermission] =
+    useForegroundPermissions()
 
   const { goBack } = useNavigation()
   const realm = useRealm()
@@ -68,6 +77,45 @@ export function Departure() {
 
       Alert.alert('Erro', 'Não foi possível registrar saída do veículo')
     }
+  }
+
+  useEffect(() => {
+    requestLocationForegroundPermission()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (!locationForegroundPermission?.granted) {
+      return
+    }
+
+    let subscription: LocationSubscription
+
+    watchPositionAsync(
+      {
+        accuracy: LocationAccuracy.High,
+        timeInterval: 1000,
+      },
+      (location) => {
+        console.log(location)
+      },
+    ).then((response) => (subscription = response))
+
+    return () => subscription.remove()
+  }, [locationForegroundPermission])
+
+  if (!locationForegroundPermission?.granted) {
+    return (
+      <Container>
+        <Header title="Saída" />
+
+        <Message>
+          Você precisa permitir que o app tenha acesso a localização para
+          utilizar essa funcionalidade. Por favor acesse as configurações do seu
+          dispositivo para conceder essa permissão ao app.
+        </Message>
+      </Container>
+    )
   }
 
   return (
