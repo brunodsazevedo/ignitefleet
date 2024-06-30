@@ -2,20 +2,28 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import dayjs from 'dayjs'
 import { useUser } from '@realm/react'
+import { ProgressDirection, ProgressMode } from 'realm'
+import toast from 'react-native-toast-message'
+import { CloudArrowUp } from 'phosphor-react-native'
 
 import { HomeHeader } from '@/components/HomeHeader'
 import { CarStatus } from '@/components/CarStatus'
+import { HistoricCard, HistoricCardProps } from '@/components/HistoricCard'
 
 import { useQuery, useRealm } from '@/libs/realm'
 import { Historic } from '@/libs/realm/schemas/Historic'
+import {
+  getLastAsyncTimestamp,
+  saveLastSyncTimestamp,
+} from '@/libs/asyncStorage/syncStorage'
 
 import { Container, Content, Label, Title } from './styles'
-import { HistoricCard, HistoricCardProps } from '@/components/HistoricCard'
-import dayjs from 'dayjs'
-import { ProgressDirection, ProgressMode } from 'realm'
+import { TopMessage } from '@/components/TopMessage'
 
 export function Home() {
+  const [percentageToSync, setPercentageToSync] = useState<string | null>(null)
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null)
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>(
     [],
@@ -47,17 +55,19 @@ export function Home() {
     }
   }
 
-  function fetchHistoric() {
+  async function fetchHistoric() {
     try {
       const response = historic.filtered(
         `status = 'arrival' SORT(created_at DESC)`,
       )
 
+      const lastSync = await getLastAsyncTimestamp()
+
       const formattedHistoric = response.map((item) => {
         return {
           id: item._id.toString(),
           licensePlate: item.license_plate,
-          isSync: false,
+          isSync: lastSync > item.updated_at!.getTime(),
           created: dayjs(item.created_at).format(
             '[Saída em] DD/MM/YYYY [às] HH:mm',
           ),
@@ -71,10 +81,26 @@ export function Home() {
     }
   }
 
-  function progressNotification(transferred: number, transferable: number) {
+  async function progressNotification(
+    transferred: number,
+    transferable: number,
+  ) {
     const percentage = (transferred / transferable) * 100
 
-    console.log('Transferido =>', `${percentage}%`)
+    if (percentage === 100) {
+      await saveLastSyncTimestamp()
+      await fetchHistoric()
+      setPercentageToSync(null)
+
+      toast.show({
+        type: 'info',
+        text1: 'Todos os dados estão sincronizados!',
+      })
+    }
+
+    if (percentage < 100) {
+      setPercentageToSync(`${percentage.toFixed(0)}% sincronizado`)
+    }
   }
 
   function handleHistoricDetails(id: string) {
@@ -126,6 +152,10 @@ export function Home() {
 
   return (
     <Container>
+      {percentageToSync && (
+        <TopMessage title={percentageToSync} icon={CloudArrowUp} />
+      )}
+
       <HomeHeader />
 
       <Content>
