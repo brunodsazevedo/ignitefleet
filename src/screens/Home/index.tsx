@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useUser } from '@realm/react'
 
 import { HomeHeader } from '@/components/HomeHeader'
 import { CarStatus } from '@/components/CarStatus'
@@ -21,6 +22,7 @@ export function Home() {
 
   const { navigate } = useNavigation()
   const realm = useRealm()
+  const user = useUser()
 
   const historic = useQuery(Historic)
 
@@ -89,6 +91,16 @@ export function Home() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    realm.subscriptions.update((mutableSubs, realm) => {
+      const historicByUserQuery = realm
+        .objects('Historic')
+        .filtered(`user_id = '${user!.id}'`)
+
+      mutableSubs.add(historicByUserQuery, { name: 'historic_by_user' })
+    })
+  }, [realm])
 
   return (
     <Container>

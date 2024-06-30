@@ -13,7 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { Loading } from '@/components/Loading'
 
-import { RealmProvider } from '@/libs/realm'
+import { RealmProvider, syncConfig } from '@/libs/realm'
 
 import theme from '@/theme'
 
@@ -44,7 +44,7 @@ export default function App() {
           />
 
           <UserProvider fallback={SignIn}>
-            <RealmProvider>
+            <RealmProvider sync={syncConfig} fallback={Loading}>
               <Routes />
             </RealmProvider>
           </UserProvider>
