@@ -10,6 +10,8 @@ import {
 } from '@expo-google-fonts/roboto'
 import { AppProvider, UserProvider } from '@realm/react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { WifiSlash } from 'phosphor-react-native'
+import { useNetInfo } from '@react-native-community/netinfo'
 
 import { Loading } from '@/components/Loading'
 
@@ -20,12 +22,14 @@ import theme from '@/theme'
 import { Routes } from '@/routes'
 
 import { SignIn } from '@/screens/SignIn'
+import { TopMessage } from '@/components/TopMessage'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
   })
+  const netInfo = useNetInfo()
 
   if (!fontsLoaded) {
     return <Loading />
@@ -42,6 +46,10 @@ export default function App() {
             backgroundColor="transparent"
             translucent
           />
+
+          {!netInfo.isConnected && (
+            <TopMessage title="Você está off-line" icon={WifiSlash} />
+          )}
 
           <UserProvider fallback={SignIn}>
             <RealmProvider sync={syncConfig} fallback={Loading}>
