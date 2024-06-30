@@ -5,6 +5,7 @@ import { useUser } from '@realm/react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
   useForegroundPermissions,
+  requestBackgroundPermissionsAsync,
   watchPositionAsync,
   LocationAccuracy,
   LocationSubscription,
@@ -27,6 +28,7 @@ import { licensePlateValidate } from '@/utils/licensePlateValidate'
 import { getAddressLocation } from '@/utils/getAddressLocation'
 
 import { Container, Content, Message } from './styles'
+import { startLocationTask } from '@/tasks/backgroundLocationTask'
 
 export function Departure() {
   const [description, setDescription] = useState('')
@@ -47,7 +49,7 @@ export function Departure() {
   const realm = useRealm()
   const user = useUser()
 
-  function handleDepartureRegister() {
+  async function handleDepartureRegister() {
     try {
       if (!licensePlateValidate(licensePlate)) {
         licensePlateRef.current?.focus()
@@ -73,6 +75,18 @@ export function Departure() {
       }
 
       setIsRegistering(true)
+
+      const backgroundPermission = await requestBackgroundPermissionsAsync()
+
+      if (!backgroundPermission.granted) {
+        setIsRegistering(true)
+        return Alert.alert(
+          'Localização',
+          'É necessário que o app tenha acesso a localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo"',
+        )
+      }
+
+      await startLocationTask()
 
       realm.write(() => {
         realm.create(
