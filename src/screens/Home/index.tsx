@@ -13,6 +13,7 @@ import { Historic } from '@/libs/realm/schemas/Historic'
 import { Container, Content, Label, Title } from './styles'
 import { HistoricCard, HistoricCardProps } from '@/components/HistoricCard'
 import dayjs from 'dayjs'
+import { ProgressDirection, ProgressMode } from 'realm'
 
 export function Home() {
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null)
@@ -70,6 +71,12 @@ export function Home() {
     }
   }
 
+  function progressNotification(transferred: number, transferable: number) {
+    const percentage = (transferred / transferable) * 100
+
+    console.log('Transferido =>', `${percentage}%`)
+  }
+
   function handleHistoricDetails(id: string) {
     navigate('arrival', { id })
   }
@@ -101,6 +108,21 @@ export function Home() {
       mutableSubs.add(historicByUserQuery, { name: 'historic_by_user' })
     })
   }, [realm])
+
+  useEffect(() => {
+    const syncSession = realm.syncSession
+    if (!syncSession) {
+      return
+    }
+
+    syncSession.addProgressNotification(
+      ProgressDirection.Upload,
+      ProgressMode.ReportIndefinitely,
+      progressNotification,
+    )
+
+    return () => syncSession.removeProgressNotification(progressNotification)
+  }, [])
 
   return (
     <Container>
