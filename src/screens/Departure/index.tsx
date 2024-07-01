@@ -95,6 +95,13 @@ export function Departure() {
             user_id: user.id!,
             license_plate: licensePlate.toLocaleUpperCase(),
             description,
+            coords: [
+              {
+                latitude: currentCoords.latitude,
+                longitude: currentCoords.longitude,
+                timestamp: new Date().getTime(),
+              },
+            ],
           }),
         )
       })
